@@ -14,7 +14,7 @@ async function translate(
   // return after 700ms
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve(text);
+      resolve(text + " " + Math.random());
     }, 700);
   });
 }
@@ -26,21 +26,17 @@ export default function StartTranslation({
   setResult,
 }: StartTranslationProps) {
   const [progress, setProgress] = createSignal(-1);
-  const [error, setError] = createSignal("");
 
-  function startTranslation() {
+  async function startTranslation() {
     setProgress(0);
-    setError("");
+    let result = text;
     for (let i = 0; i < times; i++) {
-      translate(text, randomLanguage)
-        .then((result) => {
-          setResult(result);
-          setProgress(i + 1);
-        })
-        .catch(() => {
-          setError("翻译失败");
-        });
+      result = await translate(result, randomLanguage);
+      setProgress(i + 1);
+      setResult(result);
     }
+
+    setProgress(-1);
   }
 
   return (
